@@ -1,0 +1,32 @@
+classes/
+bin/
+index.html
+target/
+
+# Eclipse
+.project
+.classpath
+.settings
+
+# MacOS
+.DS_Store
+
+# IntelliJ Idea
+.idea
+*.iml
+*.ipr
+*.iws
+out/
+
+# Gradle
+gradle-app.setting
+.gradle
+build/
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# MacOS
+*.DS_Store
+
+# Sonar
+/.sonar

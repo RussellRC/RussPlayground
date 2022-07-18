@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+}
+
+group 'org.russell'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'javax.inject:javax.inject'
+    implementation 'javax.ws.rs:javax.ws.rs-api'
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.core:jackson-core"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-guava"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    enabled = true
+    manifest {
+        attributes(
+                'Main-Class': 'org.russellrc.longpoll.Application'
+        )
+    }
+}
+
+task copyProjectJar(type: Copy, dependsOn: bootJar) {
+    description 'Copy the project output jar to the docker build directory'
+    group 'docker'
+    from bootJar
+    into 'build/docker/app-libs'
+}
+
+task buildDockerImage(type: Exec) {
+    description "Build a new docker image using 'buildRev' as the tag"
+    group 'docker'
+    dependsOn 'copyProjectJar'
+    commandLine 'docker', 'build', '-t', 'longpoll-app', '--build-arg', 'PROJECT_NAME=' + project.name, '--build-arg', 'JAR_FILE=build/docker/app-libs/*.jar', '.'
+}
+

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: longpoll-app
+  labels:
+    app: longpoll-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: longpoll-app
+  template:
+    metadata:
+      labels:
+        app: longpoll-app
+    spec:
+      containers:
+        - name: longpoll-app
+          image: longpoll-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080

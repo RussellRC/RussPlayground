@@ -1,0 +1,54 @@
+apply plugin: 'org.springframework.boot'
+
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+    compile.exclude module: "tomcat-embed-el"
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    implementation 'javax.inject:javax.inject'
+    implementation 'javax.ws.rs:javax.ws.rs-api'
+
+    implementation 'org.springframework.boot:spring-boot'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.data:spring-data-cassandra'
+
+    implementation 'com.google.guava:guava'
+
+    // Jackson
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.core:jackson-core"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-guava"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-smile"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
+}
+
+jar {
+    enabled = true
+    manifest {
+        attributes(
+            'Main-Class': 'org.russellrc.playground.CassandraApplication'
+        )
+    }
+}
+
+task copyProjectJar(type: Copy, dependsOn: bootJar) {
+    description 'Copy the project output jar to the docker build directory'
+    group 'docker'
+    from bootJar
+    into 'build/docker/app-libs'
+}
+
+task buildDockerImage(type: Exec) {
+    description "Build a new docker image using 'buildRev' as the tag"
+    group 'docker'
+    dependsOn 'copyProjectJar'
+    commandLine 'docker', 'build', '-t', 'russ-cassandra-test', '--build-arg', 'PROJECT_NAME=' + project.name, '--build-arg', 'JAR_FILE=build/docker/app-libs/*.jar', '.'
+}
+

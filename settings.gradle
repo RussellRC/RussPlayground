@@ -1,0 +1,4 @@
+rootProject.name = 'RussPlayground'
+include 'spring-data-cassandra'
+include 'long-poll'
+

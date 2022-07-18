@@ -1,0 +1,22 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  data:
+    cassandra:
+      contact-points: 127.0.0.1
+      port: 9042
+      username: cassandra
+      password: cassandra
+      local-datacenter: datacenter1
+      keyspace-name: ks_playground
+      schema-action: create_if_not_exists
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          cassandra:
+            core:
+              cql:
+                CqlTemplate: DEBUG
